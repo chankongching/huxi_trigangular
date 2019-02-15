@@ -214,12 +214,12 @@ class IBClient(EWrapper):
     #           operation, "Side:", side, "Price:", price, "Size:", size)
 
 
-ttt = None
-
-
-def test():
-    global ttt
-    # ttt = IBClient(1234)
-    test2 = IBClient(2345)
+# ttt = None
+#
+#
+# def test():
+#     global ttt
+#     # ttt = IBClient(1234)
+#     test2 = IBClient(2345)
 
 

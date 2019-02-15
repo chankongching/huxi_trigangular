@@ -1,0 +1,8 @@
+from django.core.management.base import BaseCommand
+from ib.IB import IBClient
+
+class Starter(BaseCommand):
+    help = 'ib data collector'
+
+    def handle(self, *args, **options):
+        client = IBClient()
