@@ -4,4 +4,4 @@ from ib.IB import IBClient
 class Command(BaseCommand):
     help = 'ib data collector'
     def handle(self, *args, **options):
-        client = IBClient()
+        client = IBClient(1234)
