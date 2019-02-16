@@ -5,7 +5,7 @@ from ibapi.ticktype import TickType
 from ibapi.contract import Contract
 import redis
 import json
-import random
+# import random
 import time
 from threading import Thread
 
@@ -37,7 +37,7 @@ def subscribe_all_contracts():
     while 1:
         for item in products:
             currencies = item.split('.')
-            time.sleep(0.02)
+            time.sleep(0.03)
             # if client.isConnected():
             subscribe_pair(currencies[0], currencies[1])
 
