@@ -38,8 +38,8 @@ def subscribe_all_contracts():
         for item in products:
             currencies = item.split('.')
             time.sleep(0.02)
-            if client.isConnected():
-                subscribe_pair(currencies[0], currencies[1])
+            # if client.isConnected():
+            subscribe_pair(currencies[0], currencies[1])
 
 def subscribe_pair(symbol, currency, req_id=-1):
     contract = IBClient.create_cash_contract(symbol, currency)
@@ -47,7 +47,8 @@ def subscribe_pair(symbol, currency, req_id=-1):
         req_id = create_req_code(symbol, currency)
         global req_id_map
         req_id_map[req_id] = symbol + "." + currency
-    client.reqMktData(req_id, contract, "", True, False, [])
+    if client.isConnected():
+        client.reqMktData(req_id, contract, "", True, False, [])
 
 def create_req_code( symbol, currency, index=-1):
     # if 0 <= index < len(products):
