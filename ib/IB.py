@@ -45,10 +45,10 @@ def subscribe_all_contracts(wrapper):
 
 def subscribe_pair(wrapper, symbol, currency, req_id=-1):
     contract = IBClient.create_cash_contract(symbol, currency)
-    if wrapper.req_id < 0:
-        req_id = create_req_code(wrapper, symbol, currency)
-        wrapper.req_id = req_id
-        wrapper.req_id_map[req_id] = symbol + "." + currency
+    # if req_id < 0:
+    req_id = create_req_code(wrapper, symbol, currency)
+    wrapper.req_id = req_id
+    wrapper.req_id_map[req_id] = symbol + "." + currency
     if wrapper.client.isConnected():
         wrapper.client.reqMktData(req_id, contract, "", True, False, [])
 
@@ -76,7 +76,6 @@ class IBClient(EWrapper):
         self.products = products
         self.clientId = clientId
         self.req_id_map = {}
-        self.req_id_base = 1000
         self.req_id = 0
         self.thread = None
         # global client
