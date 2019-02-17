@@ -28,29 +28,32 @@ TICKER_TYPE_ASK_PRICE = 2
 TICKER_TYPE_ASK_SIZE = 3
 redis_client = redis.StrictRedis(charset="utf-8", decode_responses=True)
 PLATFORM = 'IB'
-client = None
-req_id_base = 1000
-req_id_map = {}
+# client = None
+# req_id_base = 1000
+# req_id_map = {}
+thread = None
 
 
-def subscribe_all_contracts():
+def subscribe_all_contracts(wrapper):
     while 1:
         for item in products:
             currencies = item.split('.')
             time.sleep(0.03)
             # if client.isConnected():
-            subscribe_pair(currencies[0], currencies[1])
+            subscribe_pair(wrapper, currencies[0], currencies[1])
 
-def subscribe_pair(symbol, currency, req_id=-1):
+
+def subscribe_pair(wrapper, symbol, currency, req_id=-1):
     contract = IBClient.create_cash_contract(symbol, currency)
-    if req_id < 0:
-        req_id = create_req_code(symbol, currency)
-        global req_id_map
-        req_id_map[req_id] = symbol + "." + currency
-    if client.isConnected():
-        client.reqMktData(req_id, contract, "", True, False, [])
+    if wrapper.req_id < 0:
+        req_id = create_req_code(wrapper, symbol, currency)
+        wrapper.req_id = req_id
+        wrapper.req_id_map[req_id] = symbol + "." + currency
+    if wrapper.client.isConnected():
+        wrapper.client.reqMktData(req_id, contract, "", True, False, [])
 
-def create_req_code( symbol, currency, index=-1):
+
+def create_req_code(wrapper, symbol, currency, index=-1):
     # if 0 <= index < len(products):
     #     return req_id_base + index
     # item = symbol + '.' + currency
@@ -58,9 +61,9 @@ def create_req_code( symbol, currency, index=-1):
     # if i < 0:
     #     raise Exception('找不到对应货币对')
     # return req_id_base + i
-    global req_id_base
-    req_id_base +=1
-    return req_id_base
+    # global req_id_base
+    wrapper.req_id_base += 1
+    return wrapper.req_id_base
 
 
 class IBClient(EWrapper):
@@ -72,8 +75,10 @@ class IBClient(EWrapper):
         # self.products = sorted(products, key=lambda x: random.random(), reverse=False)
         self.products = products
         self.clientId = clientId
-        self.thread = None
-        global client
+        self.req_id_map = {}
+        self.req_id_base = 1000
+        # self.thread = None
+        # global client
         client = EClient(wrapper=self)
         self.client = client
         # 端口号是在IB gateway 或者TWS里面设置的,模拟账号是4002
@@ -119,15 +124,15 @@ class IBClient(EWrapper):
         super().connectAck()
         # self.subscribe_contract_at_index()
         # self.subscribe_all_contracts()
+        global thread
         if not self.thread or not self.thread.is_alive():
-            self.thread = Thread(target=subscribe_all_contracts)
+            thread = Thread(target=lambda: subscribe_all_contracts(self))
             self.thread.start()
-
 
     def connectionClosed(self):
         print('断开重连')
-        self.client.connect("127.0.0.1", 4002, clientId=self.clientId)
-        self.client.run()
+        # self.client.connect("127.0.0.1", 4002, clientId=self.clientId)
+        # self.client.run()
 
     # def subscribe_pair(self, symbol, currency, req_id=-1):
     #     contract = self.create_cash_contract(symbol, currency)
@@ -137,8 +142,8 @@ class IBClient(EWrapper):
     #     self.client.reqTickByTickData(req_id, contract, 'BidAsk', 0, False)
 
     def get_symbol_by_req_id(self, req_id):
-        global req_id_map
-        value = req_id_map.pop(req_id, '')
+        # global req_id_map
+        value = self.req_id_map.pop(req_id, '')
         return value
 
     def error(self, reqId: TickerId, errorCode: int, errorString: str):
@@ -215,12 +220,12 @@ class IBClient(EWrapper):
     #           operation, "Side:", side, "Price:", price, "Size:", size)
 
 
-# ttt = None
-#
-#
-# def test():
-#     global ttt
-#     # ttt = IBClient(1234)
-#     test2 = IBClient(2345)
+ttt = None
+
+
+def test():
+    global ttt
+    # ttt = IBClient(1234)
+    test2 = IBClient(2345)
 
 
