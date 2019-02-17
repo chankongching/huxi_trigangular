@@ -77,6 +77,7 @@ class IBClient(EWrapper):
         self.clientId = clientId
         self.req_id_map = {}
         self.req_id_base = 1000
+        self.req_id = 0
         self.thread = None
         # global client
         client = EClient(wrapper=self)
