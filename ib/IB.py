@@ -132,8 +132,8 @@ class IBClient(EWrapper):
 
     def connectionClosed(self):
         print('断开重连')
-        # self.client.connect("127.0.0.1", 4002, clientId=self.clientId)
-        # self.client.run()
+        self.client.connect("127.0.0.1", 4002, clientId=self.clientId)
+        self.client.run()
 
     # def subscribe_pair(self, symbol, currency, req_id=-1):
     #     contract = self.create_cash_contract(symbol, currency)
