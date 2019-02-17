@@ -77,7 +77,7 @@ class IBClient(EWrapper):
         self.clientId = clientId
         self.req_id_map = {}
         self.req_id_base = 1000
-        # self.thread = None
+        self.thread = None
         # global client
         client = EClient(wrapper=self)
         self.client = client
@@ -124,9 +124,10 @@ class IBClient(EWrapper):
         super().connectAck()
         # self.subscribe_contract_at_index()
         # self.subscribe_all_contracts()
-        global thread
+        # global thread
         if not self.thread or not self.thread.is_alive():
-            thread = Thread(target=lambda: subscribe_all_contracts(self))
+            self.thread = Thread(target=lambda: subscribe_all_contracts(self))
+            self.thread.isDaemon(True)
             self.thread.start()
 
     def connectionClosed(self):
