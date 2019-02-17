@@ -51,6 +51,8 @@ def subscribe_pair(wrapper, symbol, currency, req_id=-1):
     wrapper.req_id_map[req_id] = symbol + "." + currency
     if wrapper.client.isConnected():
         wrapper.client.reqMktData(req_id, contract, "", True, False, [])
+    else:
+        time.sleep(0.5)
 
 
 def create_req_code(wrapper, symbol, currency, index=-1):
@@ -122,9 +124,6 @@ class IBClient(EWrapper):
 
     def connectAck(self):
         super().connectAck()
-        # self.subscribe_contract_at_index()
-        # self.subscribe_all_contracts()
-        # global thread
         if not self.thread or not self.thread.is_alive():
             self.thread = Thread(target=lambda: subscribe_all_contracts(self))
             self.thread.setDaemon(True)
@@ -132,6 +131,8 @@ class IBClient(EWrapper):
 
     def connectionClosed(self):
         print('断开重连')
+        time.sleep(0.5)
+        self.client = EClient(wrapper=self)
         self.client.connect("127.0.0.1", 4002, clientId=self.clientId)
         self.client.run()
 
