@@ -127,7 +127,7 @@ class IBClient(EWrapper):
         # global thread
         if not self.thread or not self.thread.is_alive():
             self.thread = Thread(target=lambda: subscribe_all_contracts(self))
-            self.thread.isDaemon(True)
+            self.thread.setDaemon(True)
             self.thread.start()
 
     def connectionClosed(self):
