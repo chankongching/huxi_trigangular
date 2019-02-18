@@ -196,7 +196,7 @@ class IBClient(EWrapper):
             "bids": [[cache.get("bidPrice"), cache.get("bidSize")]],
             "symbol": product_name
         }
-        redis_client.set(product_name + "@" + PLATFORM, json.dumps(data), ex=120)
+        redis_client.set(product_name + "@" + PLATFORM.lower(), json.dumps(data), ex=120)
         redis_client.publish(PLATFORM, json.dumps({"symbol": product_name, "time": time.time()}))
 
         # time.sleep(0.015)
