@@ -8,6 +8,8 @@ import json
 # import random
 import time
 from threading import Thread
+import logging
+logger = logging.getLogger(__name__)
 
 products = ['AUD.CAD', 'AUD.CHF', 'AUD.CNH', 'AUD.HKD', 'AUD.JPY', 'AUD.NZD', 'AUD.SGD', 'AUD.USD', 'AUD.ZAR',
             'CAD.CHF', 'CAD.CNH', 'CAD.JPY', 'CHF.CNH', 'CHF.CZK', 'CHF.DKK', 'CHF.HUF', 'CHF.JPY', 'CHF.NOK',
@@ -130,7 +132,7 @@ class IBClient(EWrapper):
             self.thread.start()
 
     def connectionClosed(self):
-        print('断开重连')
+        logger.debug("断开重连")
         time.sleep(0.5)
         self.client = EClient(wrapper=self)
         self.client.connect("127.0.0.1", 4002, clientId=self.clientId)
@@ -153,14 +155,13 @@ class IBClient(EWrapper):
         # if reqId - self.req_id_base >= 0:
         #     item = self.products[reqId - self.req_id_base]
         item = self.get_symbol_by_req_id(reqId)
-        print(item + ",errorCode:" + str(errorCode) + ",error:" + errorString)
+        logger.error(item + ",errorCode:" + str(errorCode) + ",error:" + errorString)
         # else:
         #     print("requestId:" + str(reqId) + "errorCode:" + str(errorCode) + ",error:" + errorString)
 
     def tickPrice(self, reqId: TickerId, tickType: TickType, price: float,
                   attrib: TickAttrib):
         super().tickPrice(reqId, tickType, price, attrib)
-        # print("tickPrice:" + str(price) + ",tickType:" + str(tickType))
         data = self.cache_data.get(reqId, {})
         if tickType == TICKER_TYPE_ASK_PRICE:
             data['askPrice'] = str(price)
