@@ -21,7 +21,7 @@ products = ['AUD.CAD', 'AUD.CHF', 'AUD.CNH', 'AUD.HKD', 'AUD.JPY', 'AUD.NZD', 'A
             'GBP.TRY', 'GBP.USD', 'GBP.ZAR', 'HKD.JPY', 'KRW.AUD', 'KRW.CAD', 'KRW.CHF', 'KRW.EUR', 'KRW.GBP',
             'KRW.HKD', 'KRW.JPY', 'KRW.USD', 'MXN.JPY', 'NOK.JPY', 'NOK.SEK', 'NZD.CAD', 'NZD.CHF', 'NZD.JPY',
             'NZD.USD', 'SEK.JPY', 'SGD.CNH', 'SGD.JPY', 'TRY.JPY', 'USD.CAD', 'USD.CHF', 'USD.CNH', 'USD.CZK',
-            'USD.DKK', 'USD.HKD', 'USD.HUF', 'USD.ILS', 'USD.JPY',  'USD.MXN', 'USD.NOK', 'USD.PLN',
+            'USD.DKK', 'USD.HKD', 'USD.HUF', 'USD.ILS', 'USD.JPY', 'USD.KRW', 'USD.MXN', 'USD.NOK', 'USD.PLN',
             'USD.RUB', 'USD.SEK', 'USD.SGD', 'USD.TRY', 'USD.ZAR', 'ZAR.JPY']
 
 TICKER_TYPE_BID_SIZE = 0
@@ -89,7 +89,6 @@ class IBClient(EWrapper):
         self.client.connect("127.0.0.1", 4002, clientId=clientId)
         self.client.run()
 
-
     # def subscribe_all_contracts(self):
     #     while 1:
     #         for item in self.products:
@@ -97,7 +96,7 @@ class IBClient(EWrapper):
     #             time.sleep(0.015)
     #             self.subscribe_pair(currencies[0], currencies[1])
 
-        # self.subscribe_pair('CHF','JPY')
+    # self.subscribe_pair('CHF','JPY')
 
     # def subscribe_contract_at_index(self):
     #     i = self.index % len(self.products)
@@ -107,7 +106,7 @@ class IBClient(EWrapper):
     #     self.subscribe_pair(currencies[0], currencies[1], req_id)
 
     @staticmethod
-    def create_cash_contract( symbol, currency):
+    def create_cash_contract(symbol, currency):
         contract = Contract()
         contract.symbol = symbol
         contract.currency = currency
@@ -186,8 +185,8 @@ class IBClient(EWrapper):
 
         # i = reqId - self.req_id_base
         # product_name = self.products[i]
-        product_name = self.get_symbol_by_req_id(reqId).replace('.','')
-        logger.debug("TickSnapshotEnd. TickerId:" + str(reqId)+",symbol:"+product_name)
+        product_name = self.get_symbol_by_req_id(reqId).replace('.', '')
+        logger.debug("TickSnapshotEnd. TickerId:" + str(reqId) + ",symbol:" + product_name)
         cache = self.cache_data.pop(reqId, None)
         if not cache:
             return
@@ -230,5 +229,3 @@ def test():
     global ttt
     # ttt = IBClient(1234)
     test2 = IBClient(2345)
-
-
