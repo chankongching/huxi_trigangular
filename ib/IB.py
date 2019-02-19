@@ -187,11 +187,11 @@ class IBClient(EWrapper):
         # i = reqId - self.req_id_base
         # product_name = self.products[i]
         product_name = self.get_symbol_by_req_id(reqId)
-        print("TickSnapshotEnd. TickerId:" + str(reqId)+",symbol:"+product_name)
+        logger.debug("TickSnapshotEnd. TickerId:" + str(reqId)+",symbol:"+product_name)
         cache = self.cache_data.pop(reqId, None)
         if not cache:
             return
-        cache["symbol"] = product_name
+        cache["symbol"] = product_name.replace('.', '')
         data = {
             "asks": [[cache.get("askPrice"), cache.get('askSize')]],
             "bids": [[cache.get("bidPrice"), cache.get("bidSize")]],
