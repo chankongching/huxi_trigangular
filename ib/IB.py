@@ -58,14 +58,6 @@ def subscribe_pair(wrapper, symbol, currency, req_id=-1):
 
 
 def create_req_code(wrapper, symbol, currency, index=-1):
-    # if 0 <= index < len(products):
-    #     return req_id_base + index
-    # item = symbol + '.' + currency
-    # i = products.index(item)
-    # if i < 0:
-    #     raise Exception('找不到对应货币对')
-    # return req_id_base + i
-    # global req_id_base
     wrapper.req_id_base += 1
     return wrapper.req_id_base
 
@@ -89,22 +81,6 @@ class IBClient(EWrapper):
         self.client.connect("127.0.0.1", 4002, clientId=clientId)
         self.client.run()
 
-    # def subscribe_all_contracts(self):
-    #     while 1:
-    #         for item in self.products:
-    #             currencies = item.split('.')
-    #             time.sleep(0.015)
-    #             self.subscribe_pair(currencies[0], currencies[1])
-
-    # self.subscribe_pair('CHF','JPY')
-
-    # def subscribe_contract_at_index(self):
-    #     i = self.index % len(self.products)
-    #     item = self.products[i]
-    #     currencies = item.split('.')
-    #     req_id = self.create_req_code('', '', i)
-    #     self.subscribe_pair(currencies[0], currencies[1], req_id)
-
     @staticmethod
     def create_cash_contract(symbol, currency):
         contract = Contract()
@@ -114,14 +90,6 @@ class IBClient(EWrapper):
         contract.exchange = "IDEALPRO"
         return contract
 
-    # def create_req_code(self, symbol, currency, index=-1):
-    #     if 0 <= index < len(self.products):
-    #         return self.req_id_base + index
-    #     item = symbol + '.' + currency
-    #     i = self.products.index(item)
-    #     if i < 0:
-    #         raise Exception('找不到对应货币对')
-    #     return self.req_id_base + i
 
     def connectAck(self):
         super().connectAck()
@@ -137,26 +105,14 @@ class IBClient(EWrapper):
         self.client.connect("127.0.0.1", 4002, clientId=self.clientId)
         self.client.run()
 
-    # def subscribe_pair(self, symbol, currency, req_id=-1):
-    #     contract = self.create_cash_contract(symbol, currency)
-    #     if req_id < 0:
-    #         req_id = self.create_req_code(symbol, currency)
-    #     self.client.reqMktData(req_id, contract, "", True, False, [])
-    #     self.client.reqTickByTickData(req_id, contract, 'BidAsk', 0, False)
-
     def get_symbol_by_req_id(self, req_id):
-        # global req_id_map
         value = self.req_id_map.pop(req_id, '')
         return value
 
     def error(self, reqId: TickerId, errorCode: int, errorString: str):
         super().error(reqId, errorCode, errorString)
-        # if reqId - self.req_id_base >= 0:
-        #     item = self.products[reqId - self.req_id_base]
         item = self.get_symbol_by_req_id(reqId)
         logger.error(item + ",errorCode:" + str(errorCode) + ",error:" + errorString)
-        # else:
-        #     print("requestId:" + str(reqId) + "errorCode:" + str(errorCode) + ",error:" + errorString)
 
     def tickPrice(self, reqId: TickerId, tickType: TickType, price: float,
                   attrib: TickAttrib):
@@ -171,7 +127,6 @@ class IBClient(EWrapper):
 
     def tickSize(self, reqId: TickerId, tickType: TickType, size: int):
         super().tickSize(reqId, tickType, size)
-        # print("tickerSize:" + str(size) + ",tickType:" + str(tickType))
         data = self.cache_data.get(reqId, {})
         if tickType == TICKER_TYPE_ASK_SIZE:
             data['askSize'] = str(size)
@@ -183,8 +138,6 @@ class IBClient(EWrapper):
     def tickSnapshotEnd(self, reqId: int):
         super().tickSnapshotEnd(reqId)
 
-        # i = reqId - self.req_id_base
-        # product_name = self.products[i]
         product_name = self.get_symbol_by_req_id(reqId).replace('.', '')
         logger.debug("TickSnapshotEnd. TickerId:" + str(reqId) + ",symbol:" + product_name)
         cache = self.cache_data.pop(reqId, None)
@@ -198,28 +151,6 @@ class IBClient(EWrapper):
         }
         redis_client.set(product_name + "@" + PLATFORM.lower(), json.dumps(data), ex=120)
         redis_client.publish(PLATFORM, json.dumps({"symbol": product_name, "time": time.time()}))
-
-        # time.sleep(0.015)
-        # self.index += 1
-        # self.subscribe_contract_at_index()
-
-    # def tickByTickBidAsk(self, reqId: int, time: int, bidPrice: float, askPrice: float,
-    #                      bidSize: int, askSize: int, tickAttribBidAsk: TickAttribBidAsk):
-    #     print(str(reqId) + ":tick by tick,bidPrice:" + str(bidPrice) + '，bidSize:' + str(bidSize) + ",askPrice:" + str(
-    #         askPrice)
-    #           + ",askSize:" + str(askSize))
-
-    # def mktDepthExchanges(self, depthMktDataDescriptions: ListOfDepthExchanges):
-    #     super().mktDepthExchanges(depthMktDataDescriptions)
-    #     print("MktDepthExchanges:")
-    #     for desc in depthMktDataDescriptions:
-    #         print("DepthMktDataDescription.", desc)
-    #
-    # def updateMktDepth(self, reqId: TickerId, position: int, operation: int,
-    #                    side: int, price: float, size: int):
-    #     # super().updateMktDepth(reqId, position, operation, side, price, size)
-    #     print("UpdateMarketDepth. ReqId:", reqId, "Position:", position, "Operation:",
-    #           operation, "Side:", side, "Price:", price, "Size:", size)
 
 
 ttt = None
