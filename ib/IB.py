@@ -34,6 +34,8 @@ PLATFORM = 'IB'
 # req_id_base = 1000
 # req_id_map = {}
 thread = None
+# PORT = 4002
+PORT = 7497
 
 
 def subscribe_all_contracts(wrapper):
@@ -78,7 +80,7 @@ class IBClient(EWrapper):
         client = EClient(wrapper=self)
         self.client = client
         # 端口号是在IB gateway 或者TWS里面设置的,模拟账号是4002
-        self.client.connect("127.0.0.1", 4002, clientId=clientId)
+        self.client.connect("127.0.0.1", PORT, clientId=clientId)
         self.client.run()
 
     @staticmethod
@@ -102,7 +104,7 @@ class IBClient(EWrapper):
         logger.debug("断开重连")
         time.sleep(0.5)
         self.client = EClient(wrapper=self)
-        self.client.connect("127.0.0.1", 4002, clientId=self.clientId)
+        self.client.connect("127.0.0.1", PORT, clientId=self.clientId)
         self.client.run()
 
     def get_symbol_by_req_id(self, req_id):
