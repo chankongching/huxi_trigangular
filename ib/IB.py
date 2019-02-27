@@ -57,6 +57,7 @@ def subscribe_pair(wrapper, symbol, currency, req_id=-1):
         wrapper.client.reqMktData(req_id, contract, "", True, False, [])
     else:
         time.sleep(0.5)
+        wrapper.client.reqMktData(req_id, contract, "", True, False, [])
 
 
 def create_req_code(wrapper, symbol, currency, index=-1):
