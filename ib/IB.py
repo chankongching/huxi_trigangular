@@ -51,7 +51,7 @@ def subscribe_pair(wrapper, symbol, currency, req_id=-1):
     contract = IBClient.create_cash_contract(symbol, currency)
     # if req_id < 0:
     req_id = create_req_code(wrapper, symbol, currency)
-    wrapper.req_id = req_id
+    # wrapper.req_id = req_id
     wrapper.req_id_map[req_id] = symbol + "." + currency
     # if wrapper.client.isConnected():
     wrapper.client.reqMktData(req_id, contract, "", True, False, [])
@@ -75,7 +75,7 @@ class IBClient(EWrapper):
         self.products = products
         self.clientId = clientId
         self.req_id_map = {}
-        self.req_id = 0
+        # self.req_id = 0
         self.thread = None
         # global client
         client = EClient(wrapper=self)
@@ -132,12 +132,12 @@ class IBClient(EWrapper):
         super().tickSize(reqId, tickType, size)
         data = self.cache_data.get(reqId, {})
         if tickType == TICKER_TYPE_ASK_SIZE:
-            if size == 0 :
+            if size == 0:
                 # logger.error("tickerType:"+str(tickType)+",size:"+str(size))
                 return
             data['askSize'] = str(size)
         elif tickType == TICKER_TYPE_BID_SIZE:
-            if size == 0 :
+            if size == 0:
                 # logger.error("tickerType:"+str(tickType)+",size:"+str(size))
                 return
             data['bidSize'] = str(size)
@@ -148,7 +148,7 @@ class IBClient(EWrapper):
         super().tickSnapshotEnd(reqId)
 
         product_name = self.get_symbol_by_req_id(reqId).replace('.', '')
-        logger.debug("TickSnapshotEnd. TickerId:" + str(reqId) + ",symbol:" + product_name)
+        logger.error("TickSnapshotEnd. TickerId:" + str(reqId) + ",symbol:" + product_name)
         cache = self.cache_data.get(reqId, None)
         if not cache or not cache.get('askSize') or not cache.get('bidSize'):
             return
