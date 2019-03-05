@@ -132,8 +132,12 @@ class IBClient(EWrapper):
         super().tickSize(reqId, tickType, size)
         data = self.cache_data.get(reqId, {})
         if tickType == TICKER_TYPE_ASK_SIZE:
+            if size == 0 :
+                logger.error("tickerType:"+str(tickType)+",size:"+str(size))
             data['askSize'] = str(size)
         elif tickType == TICKER_TYPE_BID_SIZE:
+            if size == 0 :
+                logger.error("tickerType:"+str(tickType)+",size:"+str(size))
             data['bidSize'] = str(size)
 
         self.cache_data[reqId] = data
@@ -145,8 +149,6 @@ class IBClient(EWrapper):
         logger.debug("TickSnapshotEnd. TickerId:" + str(reqId) + ",symbol:" + product_name)
         cache = self.cache_data.get(reqId, None)
         if not cache or not cache.get('askSize') or not cache.get('bidSize'):
-            logger.error("没有拿到完整的行情，跳过")
-            logger.error(json.dumps(cache))
             return
         self.cache_data.pop(reqId, None)
         cache["symbol"] = product_name
