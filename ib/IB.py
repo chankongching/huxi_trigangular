@@ -131,13 +131,14 @@ class IBClient(EWrapper):
     def tickSize(self, reqId: TickerId, tickType: TickType, size: int):
         super().tickSize(reqId, tickType, size)
         data = self.cache_data.get(reqId, {})
-        if size == 0:
-            logger.error("size为0，放弃此行情")
-            return
         if tickType == TICKER_TYPE_ASK_SIZE:
             data['askSize'] = str(size)
+            if size == 0:
+                logger.error("ask 是0")
         elif tickType == TICKER_TYPE_BID_SIZE:
             data['bidSize'] = str(size)
+            if size == 0:
+                logger.error("bid 是0")
 
         self.cache_data[reqId] = data
 
