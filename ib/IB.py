@@ -148,7 +148,7 @@ class IBClient(EWrapper):
         super().tickSnapshotEnd(reqId)
 
         product_name = self.get_symbol_by_req_id(reqId).replace('.', '')
-        logger.error("TickSnapshotEnd. TickerId:" + str(reqId) + ",symbol:" + product_name)
+        # logger.error("TickSnapshotEnd. TickerId:" + str(reqId) + ",symbol:" + product_name)
         cache = self.cache_data.get(reqId, None)
         if not cache or not cache.get('askSize') or not cache.get('bidSize'):
             return
