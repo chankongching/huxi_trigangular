@@ -134,10 +134,12 @@ class IBClient(EWrapper):
         if tickType == TICKER_TYPE_ASK_SIZE:
             if size == 0 :
                 logger.error("tickerType:"+str(tickType)+",size:"+str(size))
+                return
             data['askSize'] = str(size)
         elif tickType == TICKER_TYPE_BID_SIZE:
             if size == 0 :
                 logger.error("tickerType:"+str(tickType)+",size:"+str(size))
+                return
             data['bidSize'] = str(size)
 
         self.cache_data[reqId] = data
