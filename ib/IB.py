@@ -148,8 +148,8 @@ class IBClient(EWrapper):
             return
         cache["symbol"] = product_name
         data = {
-            "asks": [[cache.get("askPrice"), cache.get('askSize')]],
-            "bids": [[cache.get("bidPrice"), cache.get("bidSize")]],
+            "asks": [[cache.get("askPrice",'-1'), cache.get('askSize','-1')]],
+            "bids": [[cache.get("bidPrice",'-1'), cache.get("bidSize",'-1')]],
             "symbol": product_name
         }
         redis_client.set(product_name + "DEPTH@" + PLATFORM.lower(), json.dumps(data), ex=120)
