@@ -34,8 +34,8 @@ PLATFORM = 'IB'
 # req_id_base = 1000
 # req_id_map = {}
 thread = None
-PORT = 4002
-# PORT = 7497
+# PORT = 4002
+PORT = 7497
 
 
 def subscribe_all_contracts(wrapper):
@@ -148,8 +148,8 @@ class IBClient(EWrapper):
             return
         cache["symbol"] = product_name
         data = {
-            "asks": [[cache.get("askPrice",'-1'), cache.get('askSize','-1')]],
-            "bids": [[cache.get("bidPrice",'-1'), cache.get("bidSize",'-1')]],
+            "asks": [[cache.get("askPrice"), cache.get('askSize')]],
+            "bids": [[cache.get("bidPrice"), cache.get("bidSize")]],
             "symbol": product_name
         }
         redis_client.set(product_name + "DEPTH@" + PLATFORM.lower(), json.dumps(data), ex=120)
