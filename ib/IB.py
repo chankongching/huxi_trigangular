@@ -34,8 +34,8 @@ PLATFORM = 'IB'
 # req_id_base = 1000
 # req_id_map = {}
 thread = None
-PORT = 4002
-# PORT = 7497
+# PORT = 4002
+PORT = 7497
 
 
 def subscribe_all_contracts(wrapper):
@@ -133,12 +133,8 @@ class IBClient(EWrapper):
         data = self.cache_data.get(reqId, {})
         if tickType == TICKER_TYPE_ASK_SIZE:
             data['askSize'] = str(size)
-            if size == 0:
-                logger.error("ask 是0")
         elif tickType == TICKER_TYPE_BID_SIZE:
             data['bidSize'] = str(size)
-            if size == 0:
-                logger.error("bid 是0")
 
         self.cache_data[reqId] = data
 
