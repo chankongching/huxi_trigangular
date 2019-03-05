@@ -131,7 +131,8 @@ class IBClient(EWrapper):
     def tickSize(self, reqId: TickerId, tickType: TickType, size: int):
         super().tickSize(reqId, tickType, size)
         data = self.cache_data.get(reqId, {})
-        logger.error("tickSize")
+        if size ==0 :
+            logger.error("size:"+str(size))
         if tickType == TICKER_TYPE_ASK_SIZE:
             data['askSize'] = str(size)
         elif tickType == TICKER_TYPE_BID_SIZE:
@@ -153,6 +154,7 @@ class IBClient(EWrapper):
             "bids": [[cache.get("bidPrice"), cache.get("bidSize")]],
             "symbol": product_name
         }
+        logger.error(json.dumps(data))
         redis_client.set(product_name + "DEPTH@" + PLATFORM.lower(), json.dumps(data), ex=120)
         redis_client.publish(PLATFORM, json.dumps({"symbol": product_name, "time": time.time()}))
 
