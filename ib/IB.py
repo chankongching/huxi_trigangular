@@ -131,8 +131,8 @@ class IBClient(EWrapper):
     def tickSize(self, reqId: TickerId, tickType: TickType, size: int):
         super().tickSize(reqId, tickType, size)
         data = self.cache_data.get(reqId, {})
-        if size ==0 :
-            logger.error("size:"+str(size))
+        if size == 0:
+            return
         if tickType == TICKER_TYPE_ASK_SIZE:
             data['askSize'] = str(size)
         elif tickType == TICKER_TYPE_BID_SIZE:
@@ -146,7 +146,7 @@ class IBClient(EWrapper):
         product_name = self.get_symbol_by_req_id(reqId).replace('.', '')
         logger.debug("TickSnapshotEnd. TickerId:" + str(reqId) + ",symbol:" + product_name)
         cache = self.cache_data.pop(reqId, None)
-        if not cache:
+        if not cache or not cache.get('askSize') or not cache.get('bidSize'):
             return
         cache["symbol"] = product_name
         data = {
