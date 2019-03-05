@@ -143,11 +143,12 @@ class IBClient(EWrapper):
 
         product_name = self.get_symbol_by_req_id(reqId).replace('.', '')
         logger.debug("TickSnapshotEnd. TickerId:" + str(reqId) + ",symbol:" + product_name)
-        cache = self.cache_data.pop(reqId, None)
+        cache = self.cache_data.get(reqId, None)
         if not cache or not cache.get('askSize') or not cache.get('bidSize'):
             logger.error("没有拿到完整的行情，跳过")
             logger.error(json.dumps(cache))
             return
+        self.cache_data.pop(reqId, None)
         cache["symbol"] = product_name
         data = {
             "asks": [[cache.get("askPrice"), cache.get('askSize')]],
