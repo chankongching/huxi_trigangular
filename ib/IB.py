@@ -132,6 +132,7 @@ class IBClient(EWrapper):
         super().tickSize(reqId, tickType, size)
         data = self.cache_data.get(reqId, {})
         if size == 0:
+            logger.error("size为0，放弃此行情")
             return
         if tickType == TICKER_TYPE_ASK_SIZE:
             data['askSize'] = str(size)
@@ -154,7 +155,6 @@ class IBClient(EWrapper):
             "bids": [[cache.get("bidPrice"), cache.get("bidSize")]],
             "symbol": product_name
         }
-        logger.error(json.dumps(data))
         redis_client.set(product_name + "DEPTH@" + PLATFORM.lower(), json.dumps(data), ex=120)
         redis_client.publish(PLATFORM, json.dumps({"symbol": product_name, "time": time.time()}))
 
