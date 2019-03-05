@@ -34,8 +34,8 @@ PLATFORM = 'IB'
 # req_id_base = 1000
 # req_id_map = {}
 thread = None
-# PORT = 4002
-PORT = 7497
+PORT = 4002
+# PORT = 7497
 
 
 def subscribe_all_contracts(wrapper):
