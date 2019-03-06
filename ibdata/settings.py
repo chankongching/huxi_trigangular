@@ -119,3 +119,45 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+CURRENT_DIR = os.path.dirname(os.path.dirname(__file__))
+LOG_FILE = os.path.join(CURRENT_DIR, os.environ.get("LOGPATH", 'logs/bitcorn.log'))
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'root': {
+        'level': 'WARNING',
+        'handlers': ['log_file'],
+    },
+    'formatters': {
+        'verbose': {
+            'format': '[%(asctime)-12s] %(message)s',
+            'datefmt': '%b %d %H:%M:%S'
+        },
+        'simple': {
+            'format': '%(message)s'
+        },
+    },
+    'handlers': {
+        'log_file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOG_FILE,
+            'maxBytes': 16777216,  # 16megabytes
+            'formatter': 'verbose'
+        },
+    },
+    'loggers': {
+
+        'default': {
+            'handlers': ['log_file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        }
+    },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
+}
