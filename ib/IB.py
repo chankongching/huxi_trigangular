@@ -163,7 +163,7 @@ class IBClient(EWrapper):
         cache = self.cache_data.get(reqId, None)
         if not cache or not cache.get('askSize') or not cache.get('bidSize'):
             return
-        self.cache_data.pop(reqId, None)
+        self.cache_data.get(reqId, None)
         cache["symbol"] = product_name
         data = {
             "asks": [[cache.get("askPrice",'-1'), cache.get('askSize')]],
@@ -211,8 +211,10 @@ class IBClient(EWrapper):
         data = self.cache_data.get(reqId, {})
         if tickType == TICKER_TYPE_ASK_PRICE:
             data['askPrice'] = str(price)
+            print("tickPrice", reqId, price)
         elif tickType == TICKER_TYPE_BID_PRICE:
             data['bidPrice'] = str(price)
+            print("tickPrice", reqId, price)
 
         self.cache_data[reqId] = data
         # print("tickPrice", reqId, price)
@@ -222,11 +224,15 @@ class IBClient(EWrapper):
         data = self.cache_data.get(reqId, {})
         if tickType == TICKER_TYPE_ASK_SIZE:
             data['askSize'] = str(size)
+            print("tickSize", reqId, size)
+
         elif tickType == TICKER_TYPE_BID_SIZE:
             data['bidSize'] = str(size)
-
+            print("tickSize", reqId, size)
         self.cache_data[reqId] = data
         self.publish_data(reqId)
+        # print("tickSize", reqId, size)
+
 
     def create_req_code(self):
         self.req_id_base += 1
