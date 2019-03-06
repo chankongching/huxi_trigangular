@@ -10,6 +10,7 @@ import time
 from threading import Thread
 import utils.log as logger
 from datetime import datetime, timedelta
+
 try:
     import pandas as pd
 except Exception as e:
@@ -44,16 +45,12 @@ PORT = 4002
 
 def subscribe_all_contracts_lob(wrapper):
     # while 1:
-        for item in products:
-            currencies = item.split('.')
-            time.sleep(0.03)
-            # if client.isConnected():
-            wrapper.subscribe_pair(currencies[0], currencies[1])
+    for item in products:
+        currencies = item.split('.')
+        time.sleep(0.03)
+        # if client.isConnected():
+        wrapper.subscribe_pair(currencies[0], currencies[1])
 
-
-def create_req_code(wrapper, symbol, currency, index=-1):
-    wrapper.req_id_base += 1
-    return wrapper.req_id_base
 
 
 def save_klines(pair, klines):
@@ -92,6 +89,7 @@ def subscribe_and_save_kline(wrapper, start="20100101 00:00:00", end="20190101 0
         def finish_callback(callback_wrapper):
             save_klines(pair, callback_wrapper.klines)
             subscribe_and_save_kline(wrapper, mid_end, end)
+
         wrapper.subscribe_kline(currencies[0], currencies[1], mid_end, finish=finish_callback)
     else:
         def finish_callback(callback_wrapper):
@@ -102,6 +100,7 @@ def subscribe_and_save_kline(wrapper, start="20100101 00:00:00", end="20190101 0
             product_index += 1
             print("finish " + pair + " next index " + str(product_index))
             subscribe_and_save_kline(wrapper)
+
         wrapper.subscribe_kline(currencies[0], currencies[1], end, finish=finish_callback)
 
 
@@ -150,7 +149,6 @@ class IBClient(EWrapper):
         self.client = client
         self.klines = None
 
-
     @staticmethod
     def create_cash_contract(symbol, currency):
         contract = Contract()
@@ -159,6 +157,22 @@ class IBClient(EWrapper):
         contract.secType = "CASH"
         contract.exchange = "IDEALPRO"
         return contract
+
+    def publish_data(self, reqId):
+        product_name = self.get_symbol_by_req_id(reqId).replace('.', '')
+        cache = self.cache_data.get(reqId, None)
+        if not cache or not cache.get('askSize') or not cache.get('bidSize'):
+            return
+        self.cache_data.pop(reqId, None)
+        cache["symbol"] = product_name
+        data = {
+            "asks": [[cache.get("askPrice"), cache.get('askSize')]],
+            "bids": [[cache.get("bidPrice"), cache.get("bidSize")]],
+            "symbol": product_name
+        }
+        # logger.error("publish data:" + product_name)
+        redis_client.set(product_name + "DEPTH@" + PLATFORM.lower(), json.dumps(data), ex=180)
+        redis_client.publish(PLATFORM, json.dumps({"symbol": product_name, "time": time.time()}))
 
     def start(self):
         # 端口号是在IB gateway 或者TWS里面设置的,模拟账号是4002
@@ -201,24 +215,18 @@ class IBClient(EWrapper):
             data['bidPrice'] = str(price)
 
         self.cache_data[reqId] = data
-        print("tickPrice", reqId, price)
+        # print("tickPrice", reqId, price)
 
     def tickSize(self, reqId: TickerId, tickType: TickType, size: int):
         super().tickSize(reqId, tickType, size)
         data = self.cache_data.get(reqId, {})
         if tickType == TICKER_TYPE_ASK_SIZE:
-            if size == 0:
-                # logger.error("tickerType:"+str(tickType)+",size:"+str(size))
-                return
             data['askSize'] = str(size)
         elif tickType == TICKER_TYPE_BID_SIZE:
-            if size == 0:
-                # logger.error("tickerType:"+str(tickType)+",size:"+str(size))
-                return
             data['bidSize'] = str(size)
 
         self.cache_data[reqId] = data
-        print("tickSize", reqId, size)
+        self.publish_data(reqId)
 
     def create_req_code(self):
         self.req_id_base += 1
@@ -226,21 +234,22 @@ class IBClient(EWrapper):
 
     def tickSnapshotEnd(self, reqId: int):
         super().tickSnapshotEnd(reqId)
-        product_name = self.get_symbol_by_req_id(reqId).replace('.', '')
-        # logger.error("TickSnapshotEnd. TickerId:" + str(reqId) + ",symbol:" + product_name)
-        cache = self.cache_data.get(reqId, None)
-        if not cache or not cache.get('askSize') or not cache.get('bidSize'):
-            return
-        self.cache_data.pop(reqId, None)
-        cache["symbol"] = product_name
-        data = {
-            "asks": [[cache.get("askPrice"), cache.get('askSize')]],
-            "bids": [[cache.get("bidPrice"), cache.get("bidSize")]],
-            "symbol": product_name
-        }
-        logger.error("publish data:"+product_name)
-        redis_client.set(product_name + "DEPTH@" + PLATFORM.lower(), json.dumps(data), ex=180)
-        redis_client.publish(PLATFORM, json.dumps({"symbol": product_name, "time": time.time()}))
+        # product_name = self.get_symbol_by_req_id(reqId).replace('.', '')
+        # cache = self.cache_data.get(reqId, None)
+        # if not cache or not cache.get('askSize') or not cache.get('bidSize'):
+        #     return
+        # self.cache_data.pop(reqId, None)
+        # cache["symbol"] = product_name
+        # data = {
+        #     "asks": [[cache.get("askPrice"), cache.get('askSize')]],
+        #     "bids": [[cache.get("bidPrice"), cache.get("bidSize")]],
+        #     "symbol": product_name
+        # }
+        # logger.error("publish data:" + product_name)
+        # redis_client.set(product_name + "DEPTH@" + PLATFORM.lower(), json.dumps(data), ex=180)
+        # redis_client.publish(PLATFORM, json.dumps({"symbol": product_name, "time": time.time()}))
+        self.publish_data(reqId)
+
 
     def subscribe_kline(self, symbol, currency, end_datetime, duration="1 Y", bar_type="1 day", finish=None):
         self.klines = []
@@ -251,7 +260,7 @@ class IBClient(EWrapper):
         if finish:
             self.callback_map[str(req_id)] = finish
 
-    def historicalData(self, reqId:int, bar: BarData):
+    def historicalData(self, reqId: int, bar: BarData):
         # print("HistoricalData. ReqId:", reqId, "BarData.", bar)
         self.klines.append([
             bar.date,
@@ -281,6 +290,7 @@ class IBClient(EWrapper):
         #     time.sleep(0.5)
         #     wrapper.client.reqMktData(req_id, contract, "", True, False, [])
 
+
 ttt = None
 
 
@@ -288,3 +298,5 @@ def test():
     global ttt
     # ttt = IBClient(1234)
     test2 = IBClient(2345)
+    test2.ready = subscribe_all_contracts_lob
+    test2.start()
