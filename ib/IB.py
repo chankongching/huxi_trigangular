@@ -43,7 +43,7 @@ PORT = 4002
 
 
 def subscribe_all_contracts_lob(wrapper):
-    while 1:
+    # while 1:
         for item in products:
             currencies = item.split('.')
             time.sleep(0.03)
@@ -201,6 +201,7 @@ class IBClient(EWrapper):
             data['bidPrice'] = str(price)
 
         self.cache_data[reqId] = data
+        print("tickPrice", reqId, price)
 
     def tickSize(self, reqId: TickerId, tickType: TickType, size: int):
         super().tickSize(reqId, tickType, size)
@@ -217,6 +218,7 @@ class IBClient(EWrapper):
             data['bidSize'] = str(size)
 
         self.cache_data[reqId] = data
+        print("tickSize", reqId, size)
 
     def create_req_code(self):
         self.req_id_base += 1
@@ -274,7 +276,7 @@ class IBClient(EWrapper):
         # wrapper.req_id = req_id
         self.req_id_map[req_id] = symbol + "." + currency
         # if wrapper.client.isConnected():
-        self.client.reqMktData(req_id, contract, "", True, False, [])
+        self.client.reqMktData(req_id, contract, "", False, False, [])
         # else:
         #     time.sleep(0.5)
         #     wrapper.client.reqMktData(req_id, contract, "", True, False, [])
