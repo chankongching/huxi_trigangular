@@ -194,7 +194,7 @@ class IBClient(EWrapper):
         # self.client.run()
 
     def get_symbol_by_req_id(self, req_id):
-        value = self.req_id_map.pop(req_id, '')
+        value = self.req_id_map.get(req_id, '')
         return value
 
     def error(self, reqId: TickerId, errorCode: int, errorString: str):
