@@ -30,9 +30,6 @@ TICKER_TYPE_ASK_PRICE = 2
 TICKER_TYPE_ASK_SIZE = 3
 redis_client = redis.StrictRedis(charset="utf-8", decode_responses=True)
 PLATFORM = 'IB'
-# client = None
-# req_id_base = 1000
-# req_id_map = {}
 thread = None
 PORT = 4002
 # PORT = 7497
@@ -51,13 +48,8 @@ def subscribe_pair(wrapper, symbol, currency, req_id=-1):
     contract = IBClient.create_cash_contract(symbol, currency)
     # if req_id < 0:
     req_id = create_req_code(wrapper, symbol, currency)
-    # wrapper.req_id = req_id
     wrapper.req_id_map[req_id] = symbol + "." + currency
-    # if wrapper.client.isConnected():
     wrapper.client.reqMktData(req_id, contract, "", True, False, [])
-    # else:
-    #     time.sleep(0.5)
-    #     wrapper.client.reqMktData(req_id, contract, "", True, False, [])
 
 
 def create_req_code(wrapper, symbol, currency, index=-1):
@@ -75,9 +67,7 @@ class IBClient(EWrapper):
         self.products = products
         self.clientId = clientId
         self.req_id_map = {}
-        # self.req_id = 0
         self.thread = None
-        # global client
         client = EClient(wrapper=self)
         self.client = client
         # 端口号是在IB gateway 或者TWS里面设置的,模拟账号是4002
