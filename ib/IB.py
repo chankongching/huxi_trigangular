@@ -167,12 +167,10 @@ class IBClient(EWrapper):
 
     def connectAck(self):
         super().connectAck()
-        if self.ready:
-            self.ready(self)
-        # if not self.thread or not self.thread.is_alive():
-        #     self.thread = Thread(target=lambda: subscribe_all_contracts(self))
-        #     self.thread.setDaemon(True)
-        #     self.thread.start()
+        if not self.thread or not self.thread.is_alive():
+            self.thread = Thread(target=lambda: self.ready(self))
+            self.thread.setDaemon(True)
+            self.thread.start()
 
     def connectionClosed(self):
         logger.debug("IBClient", "断开重连")
