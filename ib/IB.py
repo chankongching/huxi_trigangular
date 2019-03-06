@@ -166,8 +166,8 @@ class IBClient(EWrapper):
         self.cache_data.pop(reqId, None)
         cache["symbol"] = product_name
         data = {
-            "asks": [[cache.get("askPrice"), cache.get('askSize')]],
-            "bids": [[cache.get("bidPrice"), cache.get("bidSize")]],
+            "asks": [[cache.get("askPrice",'-1'), cache.get('askSize')]],
+            "bids": [[cache.get("bidPrice",'-1'), cache.get("bidSize")]],
             "symbol": product_name
         }
         # logger.error("publish data:" + product_name)
