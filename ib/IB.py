@@ -10,7 +10,10 @@ import time
 from threading import Thread
 import utils.log as logger
 from datetime import datetime, timedelta
-import pandas as pd
+try:
+    import pandas as pd
+except Exception as e:
+    print(e)
 
 # 其实还有货币对：'USD.KRW',但是同时也有个"KRW.USD",所以只订阅其中一个交易对
 products = ['AUD.CAD', 'AUD.CHF', 'AUD.CNH', 'AUD.HKD', 'AUD.JPY', 'AUD.NZD', 'AUD.SGD', 'AUD.USD', 'AUD.ZAR',
