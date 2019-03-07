@@ -29,6 +29,7 @@ products = ['AUD.CAD', 'AUD.CHF', 'AUD.CNH', 'AUD.HKD', 'AUD.JPY', 'AUD.NZD', 'A
             'NZD.USD', 'SEK.JPY', 'SGD.CNH', 'SGD.JPY', 'TRY.JPY', 'USD.CAD', 'USD.CHF', 'USD.CNH', 'USD.CZK',
             'USD.DKK', 'USD.HKD', 'USD.HUF', 'USD.ILS', 'USD.JPY', 'USD.KRW', 'USD.MXN', 'USD.NOK', 'USD.PLN',
             'USD.RUB', 'USD.SEK', 'USD.SGD', 'USD.TRY', 'USD.ZAR', 'ZAR.JPY']
+BLACK_LIST_CURRENCIES = ['TRY']
 product_index = 0
 specific_pair = None
 
@@ -47,6 +48,8 @@ def subscribe_all_contracts_lob(wrapper):
     # while 1:
     for item in products:
         currencies = item.split('.')
+        if currencies[0] in BLACK_LIST_CURRENCIES or currencies[1] in BLACK_LIST_CURRENCIES:
+            continue
         time.sleep(0.03)
         # if client.isConnected():
         wrapper.subscribe_pair(currencies[0], currencies[1])
