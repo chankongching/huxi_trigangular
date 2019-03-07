@@ -192,9 +192,7 @@ class IBClient(EWrapper):
     def connectionClosed(self):
         logger.debug("IBClient", "断开重连")
         time.sleep(0.5)
-        # self.client = EClient(wrapper=self)
-        # self.client.connect("127.0.0.1", PORT, clientId=self.clientId)
-        # self.client.run()
+
 
     def get_symbol_by_req_id(self, req_id):
         value = self.req_id_map.get(req_id, '')
@@ -241,20 +239,6 @@ class IBClient(EWrapper):
 
     def tickSnapshotEnd(self, reqId: int):
         super().tickSnapshotEnd(reqId)
-        # product_name = self.get_symbol_by_req_id(reqId).replace('.', '')
-        # cache = self.cache_data.get(reqId, None)
-        # if not cache or not cache.get('askSize') or not cache.get('bidSize'):
-        #     return
-        # self.cache_data.pop(reqId, None)
-        # cache["symbol"] = product_name
-        # data = {
-        #     "asks": [[cache.get("askPrice"), cache.get('askSize')]],
-        #     "bids": [[cache.get("bidPrice"), cache.get("bidSize")]],
-        #     "symbol": product_name
-        # }
-        # logger.error("publish data:" + product_name)
-        # redis_client.set(product_name + "DEPTH@" + PLATFORM.lower(), json.dumps(data), ex=180)
-        # redis_client.publish(PLATFORM, json.dumps({"symbol": product_name, "time": time.time()}))
         self.publish_data(reqId)
 
 
@@ -287,15 +271,9 @@ class IBClient(EWrapper):
 
     def subscribe_pair(self, symbol, currency):
         contract = IBClient.create_cash_contract(symbol, currency)
-        # if req_id < 0:
         req_id = self.create_req_code()
-        # wrapper.req_id = req_id
         self.req_id_map[req_id] = symbol + "." + currency
-        # if wrapper.client.isConnected():
         self.client.reqMktData(req_id, contract, "", False, False, [])
-        # else:
-        #     time.sleep(0.5)
-        #     wrapper.client.reqMktData(req_id, contract, "", True, False, [])
 
 
 ttt = None
