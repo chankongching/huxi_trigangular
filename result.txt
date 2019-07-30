@@ -1,0 +1,19 @@
+Filesystem      Size  Used Avail Use% Mounted on
+udev            2.1G     0  2.1G   0% /dev
+tmpfs           408M  1.2M  407M   1% /run
+/dev/nvme0n1p1   32G   27G  4.5G  86% /
+tmpfs           2.1G     0  2.1G   0% /dev/shm
+tmpfs           5.3M     0  5.3M   0% /run/lock
+tmpfs           2.1G     0  2.1G   0% /sys/fs/cgroup
+/dev/loop1       14M   14M     0 100% /snap/amazon-ssm-agent/495
+tmpfs           408M     0  408M   0% /run/user/1000
+/dev/loop2       96M   96M     0 100% /snap/core/6405
+/dev/loop3       19M   19M     0 100% /snap/amazon-ssm-agent/1068
+overlay          32G   27G  4.5G  86% /var/lib/docker/overlay2/b10291e6a013fee60bf34aa9dbe9dcb0a036cf504721fcee32e96a86541e66a5/merged
+overlay          32G   27G  4.5G  86% /var/lib/docker/overlay2/e1aa4e0396d24dfe0dc30dda7a341b5af63d35671da9826f0a6901e176fd457d/merged
+overlay          32G   27G  4.5G  86% /var/lib/docker/overlay2/ea2b3b50b5eea250c580eacf69d190d8bddbabf6ec050a874947a1373ca4749c/merged
+shm              68M  8.2k   68M   1% /var/lib/docker/containers/b6ca11cd0e0909f33155b313557113f2fe72ccefa0e3952b74a8a634e94c6bf2/mounts/shm
+shm              68M     0   68M   0% /var/lib/docker/containers/cedbe8299f617380b99636cb07ef40117a74e4d7e028646f58aa1aefda12413f/mounts/shm
+/dev/loop4       96M   96M     0 100% /snap/core/6531
+/dev/loop5       94M   94M     0 100% /snap/core/6673
+shm              68M     0   68M   0% /var/lib/docker/containers/535cd562a57911d649506cb093e4f55b6f07c4e95921c729136bd39794f38f2b/mounts/shm
